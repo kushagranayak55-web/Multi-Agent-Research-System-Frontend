@@ -1,0 +1,4 @@
+This directory will hold the Writer Agent report viewer, Critic
+evaluation panel, and download/export components. Reserved by the
+React Architecture phase; intentionally empty in the foundation
+build.

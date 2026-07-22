@@ -1,0 +1,171 @@
+/* Self-hosted fonts via @fontsource — avoids a Google Fonts CDN
+   round-trip on first paint and can never fail a deploy due to a
+   blocked/slow external request. */
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/space-grotesk/500.css";
+@import "@fontsource/space-grotesk/600.css";
+@import "@fontsource/space-grotesk/700.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* MARS is dark-only by design. These tokens live under :root
+       (not .dark) because there is no light theme to fall back to —
+       see ThemeProvider for the rationale. */
+
+    --background: 240 14% 4%; /* near-black, faint blue-violet undertone */
+    --foreground: 210 20% 97%;
+
+    --surface: 240 12% 7%; /* base panel surface */
+    --surface-raised: 240 12% 10%; /* elevated / hovered surface */
+
+    --card: 240 12% 7%;
+    --card-foreground: 210 20% 97%;
+
+    --popover: 240 14% 6%;
+    --popover-foreground: 210 20% 97%;
+
+    --primary: 217 91% 60%; /* electric blue */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 258 82% 67%; /* subtle purple accent */
+    --secondary-foreground: 210 40% 98%;
+
+    --accent: 258 82% 67%;
+    --accent-foreground: 210 40% 98%;
+
+    --muted: 240 8% 14%;
+    --muted-foreground: 240 6% 63%;
+
+    --destructive: 0 72% 58%;
+    --destructive-foreground: 210 40% 98%;
+
+    --success: 152 65% 45%;
+    --success-foreground: 210 40% 98%;
+
+    --warning: 38 92% 56%;
+    --warning-foreground: 24 10% 10%;
+
+    --border: 240 8% 16%;
+    --input: 240 8% 16%;
+    --ring: 217 91% 60%;
+
+    /* Agent execution states — reused by agent cards, the network
+       graph nodes, and the execution timeline so state color always
+       means the same thing everywhere in the app. */
+    --agent-idle: 240 6% 40%;
+    --agent-running: 217 91% 60%;
+    --agent-done: 152 65% 45%;
+    --agent-failed: 0 72% 58%;
+
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display;
+  }
+
+  ::selection {
+    background-color: hsl(var(--primary) / 0.3);
+    color: hsl(var(--foreground));
+  }
+
+  /* Visible keyboard focus everywhere, styled instead of removed —
+     required for accessibility and cheap to get right once. */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  /* Shared glass-surface treatment referenced across cards, the
+     nav, and agent panels — defined once so the "how transparent /
+     how blurred" decision lives in a single place. */
+  .glass-surface {
+    background-color: hsl(var(--surface) / 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid hsl(var(--border) / 0.8);
+  }
+
+  /* Faint technical grid used behind the hero and CTA — a single,
+     restrained motif rather than a decorative pattern repeated
+     everywhere, per the "spend boldness in one place" rule. */
+  .bg-grid {
+    background-image:
+      linear-gradient(hsl(var(--border) / 0.5) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.5) 1px, transparent 1px);
+    background-size: 64px 64px;
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 40%, transparent 100%);
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 40%, transparent 100%);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Powers the "Download PDF" action in DownloadMenu, which calls
+   window.print(). Only the element with #print-report is shown,
+   and it's flipped to a light, paper-appropriate palette — printing
+   the app's dark theme verbatim would waste ink and read poorly. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #print-report,
+  #print-report * {
+    visibility: visible;
+  }
+  #print-report {
+    position: absolute;
+    inset: 0;
+    background: #ffffff;
+    color: #111111;
+    padding: 2rem;
+  }
+  #print-report h1,
+  #print-report h2,
+  #print-report h3,
+  #print-report strong {
+    color: #000000;
+  }
+  #print-report a {
+    color: #1d4ed8;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

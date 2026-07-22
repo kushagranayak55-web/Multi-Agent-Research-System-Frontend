@@ -1,0 +1,4 @@
+This directory will hold agent-specific components: AgentCard,
+AgentStatusBadge, ExecutionTimeline, AgentActivityFeed. Reserved by
+the React Architecture phase; intentionally empty in the foundation
+build.
