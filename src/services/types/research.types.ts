@@ -9,6 +9,13 @@ export interface ResearchApiResponse {
   scraped_content: string;
   report: string;
   feedback: string;
+  /**
+   * How many times the Writer Agent produced a draft. 1 means the
+   * first draft was accepted as-is; 2+ means the LangGraph pipeline
+   * routed the report back to the Writer after Critic feedback.
+   * Optional so older backend responses without this field still parse.
+   */
+  revision_count?: number;
 }
 
 /**
@@ -49,6 +56,8 @@ export interface ResearchResult {
   scrapedContent: string;
   report: string;
   critic: CriticEvaluation;
+  /** Number of times the report was revised after Critic feedback (0 = accepted on first draft). */
+  revisionCount: number;
 }
 
 /**
