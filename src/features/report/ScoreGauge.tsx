@@ -2,20 +2,22 @@ import { motion } from "framer-motion";
 
 interface ScoreGaugeProps {
   score: number;
+  maxScore?: number; // defaults to 10 to match the Critic Agent's "Score: X/10" output
 }
 
-function scoreColor(score: number): string {
-  if (score >= 80) return "hsl(var(--success))";
-  if (score >= 50) return "hsl(var(--warning))";
+function scoreColor(ratio: number): string {
+  if (ratio >= 0.8) return "hsl(var(--success))";
+  if (ratio >= 0.5) return "hsl(var(--warning))";
   return "hsl(var(--destructive))";
 }
 
-export function ScoreGauge({ score }: ScoreGaugeProps) {
+export function ScoreGauge({ score, maxScore = 10 }: ScoreGaugeProps) {
   const radius = 54;
   const circumference = 2 * Math.PI * radius;
-  const clamped = Math.min(100, Math.max(0, score));
-  const offset = circumference - (clamped / 100) * circumference;
-  const color = scoreColor(clamped);
+  const clamped = Math.min(maxScore, Math.max(0, score));
+  const ratio = maxScore > 0 ? clamped / maxScore : 0;
+  const offset = circumference - ratio * circumference;
+  const color = scoreColor(ratio);
 
   return (
     <div className="relative flex h-32 w-32 items-center justify-center">
@@ -44,10 +46,10 @@ export function ScoreGauge({ score }: ScoreGaugeProps) {
       </svg>
       <div className="absolute flex flex-col items-center">
         <span className="font-display text-3xl font-semibold" style={{ color }}>
-          {Math.round(clamped)}
+          {clamped}
         </span>
         <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-          / 100
+          / {maxScore}
         </span>
       </div>
     </div>
