@@ -56,11 +56,17 @@ function parseCriticFeedback(feedback: string): CriticEvaluation {
 }
 
 function mapResponseToResult(data: ResearchApiResponse): ResearchResult {
+  // Backend's revision_count starts at 1 after the first draft, so
+  // subtract 1 to get "number of revisions beyond the first draft."
+  const rawRevisionCount = data.revision_count ?? 1;
+  const revisionCount = Math.max(0, rawRevisionCount - 1);
+
   return {
     searchResult: data.search_result,
     scrapedContent: data.scraped_content,
     report: data.report,
     critic: parseCriticFeedback(data.feedback ?? ""),
+    revisionCount,
   };
 }
 
